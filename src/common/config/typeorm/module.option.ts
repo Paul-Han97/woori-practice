@@ -1,6 +1,6 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
-import path from 'path';
+import * as path from 'path';
 
 const entityPath: string = path.join(__dirname, '..', '**/*.{js, ts}');
 
