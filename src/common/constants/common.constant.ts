@@ -1,0 +1,1 @@
+export const CUSTOM_REPOSITORY: string = 'CUSTOM_REPOSITORY';
