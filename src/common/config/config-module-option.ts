@@ -5,6 +5,7 @@ export const configModuleOptions: ConfigModuleOptions = {
   validationSchema: Joi.object({
     APP_PORT: Joi.number().port().default(3000),
     APP_ENV: Joi.string().valid('prod', 'dev').insensitive(),
+    JWT_SECRET: Joi.string().required(),
     DATABASE_HOST: Joi.string().hostname().required(),
     DATABASE_USERNAME: Joi.string().required(),
     DATABASE_PASSWORD: Joi.string().required(),
