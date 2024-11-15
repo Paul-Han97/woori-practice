@@ -1,19 +1,19 @@
 import { CommonEntity } from "src/common/typeorm/common-entity";
-import { Gender } from "src/gender/gender.entity";
+import { User } from "src/user/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 
 @Entity()
-export class User extends CommonEntity {
-    @Column()
-    email: string;
-
-    @Column()
-    password: string;
-
+export class DeliveryAddress extends CommonEntity {
     @Column()
     name: string;
 
-    @ManyToOne(() => Gender)
+    @Column()
+    address: string;
+
+    @Column()
+    rank: number;
+
+    @ManyToOne(() => User)
     @JoinColumn({ referencedColumnName: 'id' })
-    gender: Gender;
+    user: User;
 }

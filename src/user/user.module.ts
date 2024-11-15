@@ -1,13 +1,9 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmCustomModule } from 'src/common/typeorm/custom-module';
+import { GenderRepository } from 'src/gender/entities/gender.repository';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { CustomRepository } from 'src/common/typeorm/custom-decorator';
-import { TypeOrmCustomModule } from 'src/common/typeorm/custom-module';
-import { User } from './user.entity';
-import { Gender } from 'src/gender/gender.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserRepository } from './user.repository';
-import { GenderRepository } from 'src/gender/gender.repository';
+import { UserRepository } from './entities/user.repository';
 
 @Module({
   imports: [TypeOrmCustomModule.forCustomRepository([UserRepository, GenderRepository])],

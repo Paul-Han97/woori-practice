@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmCustomModule } from './custom-module';
-import { UserRepository } from 'src/user/user.repository';
-import { GenderRepository } from 'src/gender/gender.repository';
+import { GenderRepository } from 'src/gender/entities/gender.repository';
+import { UserRepository } from 'src/user/entities/user.repository';
 
 @Global()
 @Module({
