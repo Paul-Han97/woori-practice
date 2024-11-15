@@ -14,7 +14,7 @@ import { SubCategoryModule } from './sub-category/sub-category.module';
 import { ProductImageModule } from './product-image/product-image.module';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
-
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -22,6 +22,11 @@ import { OrderModule } from './order/order.module';
     TypeOrmModule.forRoot(typeOrmModuleOptions),
     // GlobalEntity,
     // TypeOrmCustomModule.forCustomRepository([UserRepository]),
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1h' }
+    }),
     UserModule,
     DeliveryAddressModule,
     AdminModule,
