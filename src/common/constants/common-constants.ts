@@ -19,3 +19,15 @@ export const enum ORDER_STATE_TYPE {
   IN_DELIVERY = 'IN_DELIVERY',
   COMPLETE = 'COMPLETE',
 }
+
+export const enum ERROR_MESSAGE {
+  E001 = '계정을 찾을 수 없습니다.',
+  E002 = '유효한 요청이 아닙니다.',
+  E003 = '요청 권한이 없습니다.',
+}
+
+export const enum SUCCESS_MESSAGE {
+  S001 = '',
+}
+
+export const TOKEN_SCHEMA = 'bearer';
