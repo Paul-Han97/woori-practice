@@ -1,48 +1,111 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { UuidTransformer } from 'src/common/utils/uuid.util';
-import { IGenderRepository } from 'src/gender/entities/gender.interface';
-import { GenderRepository } from 'src/gender/entities/gender.repository';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  ERROR_MESSAGE,
+  GENDER_TYPE,
+  SUCCESS_MESSAGE,
+} from 'src/common/constants/common-constants';
+import { CommonUtils } from 'src/common/utils/common.util';
+import { UuidGenerator } from 'src/common/utils/uuid-generator.util';
+import { Gender } from 'src/gender/entities/gender.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { GetUserDto } from './dto/get-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserRepository } from './entities/user.repository';
-import { IUserRepository } from './entities/user.interface';
 import { User } from './entities/user.entity';
-import { GENDER_TYPE } from 'src/common/constants/common-constants';
+import { IUserRepository } from './entities/user.interface';
+import { UserRepository } from './entities/user.repository';
+import { ResponseBody, ResponseData } from 'src/common/type/response.type';
 
 @Injectable()
-export class UserService {
+export class UserService extends CommonUtils {
+  public static readonly logger = new Logger(UserService.name);
+
   constructor(
     @Inject(UserRepository)
-    private userRepository: IUserRepository,
-
-    @Inject(GenderRepository)
-    private readonly genderRepository: IGenderRepository,
-  ) {}
+    private readonly userRepository: IUserRepository,
+    // private readonly uuidGenerator: UuidGenerator,
+    // private readonly passwordManager: PasswordManager,
+    // private readonly objectFormatter: ObjectFormatter,
+  ) {
+    super();
+  }
 
   async create(createUserDto: CreateUserDto) {
-    console.log('create');
-    const gender = await this.genderRepository.findOneBy({type: createUserDto.gender});
-    // const gender = new Gender();
-    // gender.type = '남자';
+    UserService.logger.log(`UserService.create() 시작`);
+
+    const savedUser = await this.userRepository.findOneBy({
+      email: createUserDto.email,
+    });
+
+    if (savedUser) {
+      throw new BadRequestException(ERROR_MESSAGE.E004);
+    }
+
+    const gender = new Gender();
+    gender.id = this.uuidGenerator.generate(createUserDto.gender);
 
     const user = new User();
     user.name = createUserDto.name;
     user.email = createUserDto.email;
-    user.password = createUserDto.password;
+    user.password = await this.passwordManager.hash(createUserDto.password);
     user.gender = gender;
 
-    const result = await this.userRepository.testSave(user)
-    return result;
+    await this.userRepository.save(user);
+
+    const resData: ResponseData = {
+      message: SUCCESS_MESSAGE.S001,
+      data: null,
+    };
+
+    UserService.logger.log(
+      `UserService.create() 종료`,
+      `반환 값:\n${this.objectFormatter.format(resData)}`,
+    );
+    return resData;
+  }
+
+  async findByEmail(getUserDto: GetUserDto) {
+    UserService.logger.log(`UserService.findByEmail() 시작`);
+
+    if(!getUserDto.email) { 
+      throw new BadRequestException(ERROR_MESSAGE.E002);
+    }
+
+    const result = await this.userRepository.findOneBy({
+      email: getUserDto.email,
+    });
+
+    if (!result) {
+      throw new NotFoundException(ERROR_MESSAGE.E001);
+    }
+
+    delete result.password;
+
+    const resData: ResponseData = {
+      message: SUCCESS_MESSAGE.S002,
+      data: result,
+    };
+
+    UserService.logger.log(
+      `UserService.findByEmail() 종료`,
+      `반환 값:\n${this.objectFormatter.format(resData)}`,
+    );
+    return resData;
   }
 
   findAll() {
-    const uuid = new UuidTransformer().toUuid(GENDER_TYPE.MALE)
+    const uuid = new UuidGenerator().generate(GENDER_TYPE.MALE);
     console.log(uuid);
     return `This action returns all user`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    return await this.userRepository.findOneBy({ id });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

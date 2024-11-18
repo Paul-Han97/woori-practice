@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmCustomModule } from 'src/common/typeorm/custom-module';
+import { TypeOrmCustomModule } from 'src/common/typeorm/custom.module';
 import { GenderRepository } from 'src/gender/entities/gender.repository';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';

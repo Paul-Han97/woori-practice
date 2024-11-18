@@ -1,4 +1,4 @@
-import { CommonEntity } from 'src/common/typeorm/common-entity';
+import { CommonEntity } from 'src/common/typeorm/common.entity';
 import { Gender } from 'src/gender/entities/gender.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 

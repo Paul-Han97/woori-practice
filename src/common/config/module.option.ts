@@ -11,6 +11,11 @@ export const configModuleOptions: ConfigModuleOptions = {
     DATABASE_PASSWORD: Joi.string().required(),
     DATABASE_NAME: Joi.string().required(),
     DATABASE_PORT: Joi.number().port().default(5432),
+    UUID_NAMESPACE: Joi.string().uuid().required(),
+    EMAIL_USERNAME: Joi.string().email().required(),
+    EMAIL_PASSWORD: Joi.string().required(),
+    EMAIL_HOST: Joi.string().hostname().required(),
+    EMAIL_PORT: Joi.number().port().required(),
   }),
   isGlobal: true,
 };

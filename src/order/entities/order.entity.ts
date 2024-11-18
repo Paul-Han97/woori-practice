@@ -1,4 +1,4 @@
-import { CommonEntity } from 'src/common/typeorm/common-entity';
+import { CommonEntity } from 'src/common/typeorm/common.entity';
 import { OrderState } from 'src/order-state/entities/order-state.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';

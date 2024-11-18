@@ -1,5 +1,5 @@
 import { ClothingSize } from 'src/clothing-size/entities/clothing-size.entity';
-import { CommonEntity } from 'src/common/typeorm/common-entity';
+import { CommonEntity } from 'src/common/typeorm/common.entity';
 import { Product } from 'src/product/entities/product.entity';
 import { Entity, JoinColumn, ManyToOne } from 'typeorm';
 
