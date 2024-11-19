@@ -32,6 +32,7 @@ import { UserRepository } from './user/entities/user.repository';
       signOptions: { expiresIn: '1h' },
     }),
     CacheModule.register({
+      // 5분
       ttl: 1000 * 60 * 5
     }),
     UtilModule,
