@@ -14,7 +14,6 @@ import { ImageModule } from './image/image.module';
 import { OrderModule } from './order/order.module';
 import { ProductImageModule } from './product-image/product-image.module';
 import { ProductModule } from './product/product.module';
-import { SubCategoryModule } from './sub-category/sub-category.module';
 import { UserModule } from './user/user.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { TypeOrmCustomModule } from './common/typeorm/custom.module';
@@ -41,7 +40,6 @@ import { UserRepository } from './user/entities/user.repository';
     AdminModule,
     ImageModule,
     CategoryModule,
-    SubCategoryModule,
     ProductImageModule,
     ProductModule,
     OrderModule,

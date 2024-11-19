@@ -1,6 +1,6 @@
+import { Category } from 'src/category/entities/category.entity';
 import { CommonEntity } from 'src/common/typeorm/common.entity';
 import { Gender } from 'src/gender/entities/gender.entity';
-import { SubCategory } from 'src/sub-category/entities/sub-category.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity()
@@ -17,9 +17,9 @@ export class Product extends CommonEntity {
   @Column()
   view: number;
 
-  @ManyToOne(() => SubCategory)
+  @ManyToOne(() => Category)
   @JoinColumn({ referencedColumnName: 'id' })
-  subCategory: SubCategory;
+  category: Category;
 
   @ManyToOne(() => Gender)
   @JoinColumn({ referencedColumnName: 'id' })

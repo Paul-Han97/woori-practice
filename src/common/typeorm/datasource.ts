@@ -14,7 +14,6 @@ import { OrderState } from 'src/order-state/entities/order-state.entity';
 import { Product } from 'src/product/entities/product.entity';
 import { ProductClothingSize } from 'src/product-clothing-size/entities/product-clothing-size.entity';
 import { ProductImage } from 'src/product-image/entities/product-image.entity';
-import { SubCategory } from 'src/sub-category/entities/sub-category.entity';
 
 const migrationPath: string = 'dist/migrations/*.js';
 
@@ -39,7 +38,6 @@ const dataSource = {
     Product,
     ProductClothingSize,
     ProductImage,
-    SubCategory,
   ],
   migrations: [migrationPath],
   migrationsTableName: 'migrations',
