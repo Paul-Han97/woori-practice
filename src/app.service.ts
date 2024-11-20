@@ -146,6 +146,8 @@ export class AppService extends CommonUtils {
       throw new BadRequestException(ERROR_MESSAGE.E006);
     }
 
+    AppService.logger.debug(`userId: ${user.id}`);
+
     const payload = {
       id: user.id,
       email: user.email,
@@ -155,8 +157,8 @@ export class AppService extends CommonUtils {
     const token = this.jwtService.sign(payload);
 
     const resData: ResponseData = {
-      data: { access: token },
       message: SUCCESS_MESSAGE.S003,
+      data: { access: token },
     };
 
     AppService.logger.log(

@@ -8,11 +8,11 @@ export class ProductImage extends CommonEntity {
   @Column()
   rank: number;
 
-  @ManyToOne(() => Product)
+  @ManyToOne(() => Product, (product) => product.productImage)
   @JoinColumn({ referencedColumnName: 'id' })
   product: Product;
 
-  @ManyToOne(() => Image)
+  @ManyToOne(() => Image, (image) => image.productImage)
   @JoinColumn({ referencedColumnName: 'id' })
   image: Image;
 }

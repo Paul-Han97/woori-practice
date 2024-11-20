@@ -1,5 +1,6 @@
 import { CommonEntity } from 'src/common/typeorm/common.entity';
-import { Column, Entity } from 'typeorm';
+import { Order } from 'src/order/entities/order.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity()
 export class OrderState extends CommonEntity {
@@ -7,4 +8,7 @@ export class OrderState extends CommonEntity {
     length: 11,
   })
   type: string;
+
+  @OneToMany(() => Order, (order) => order.orderState)
+  order: Order[];
 }

@@ -1,4 +1,13 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Logger,
+  Param,
+  Post,
+  Query
+} from '@nestjs/common';
 import {
   ApiBody,
   ApiCreatedResponse,
@@ -8,13 +17,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserService } from './user.service';
 import { GetUserDto } from './dto/get-user.dto';
-import { ERROR_MESSAGE } from 'src/common/constants/common-constants';
+import { UserService } from './user.service';
 
 @Controller('users')
-@ApiTags('users')
 export class UserController {
+  public static readonly logger = new Logger(UserController.name);
+
   constructor(private readonly userService: UserService) {}
 
   @Post()
@@ -37,10 +46,11 @@ export class UserController {
   })
   @HttpCode(201)
   async create(@Body() createUserDto: CreateUserDto) {
+    UserController.logger.log('UserController.create() 시작');
+    UserController.logger.log('UserController.create() 종료');
     return await this.userService.create(createUserDto);
   }
-
-  @Get()
+  
   @ApiOperation({
     summary: '유저 조회',
     description: `
@@ -54,12 +64,10 @@ export class UserController {
   @ApiOkResponse({
     description: `유저를 성공적으로 조회 되었다.`,
   })
+  @Get()
   async find(@Query() getUserDto: GetUserDto) {
+    UserController.logger.log('UserController.find() 시작');
+    UserController.logger.log('UserController.find() 종료');
     return await this.userService.findByEmail(getUserDto);
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
   }
 }
