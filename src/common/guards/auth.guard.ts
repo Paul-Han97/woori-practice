@@ -4,22 +4,24 @@ import {
   ExecutionContext,
   Injectable,
   Logger,
-  NotFoundException,
-  NotImplementedException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { ERROR_MESSAGE, TOKEN_SCHEMA } from '../constants/common-constants';
+import { ConfigService } from '@nestjs/config';
+import { CommonUtils } from '../utils/common.util';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AuthGuard extends CommonUtils implements CanActivate {
   private static readonly logger = new Logger(AuthGuard.name);
 
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
-  ) {}
+    private readonly configService: ConfigService
+  ) {
+    super();
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
@@ -40,8 +42,8 @@ export class AuthGuard implements CanActivate {
         throw new BadRequestException(ERROR_MESSAGE.E002);
       }
 
-      const decoded = this.jwtService.verify(accessToken);
-      AuthGuard.logger.debug(`decoded: ${decoded}`);
+      const decoded = this.jwtService.verify(accessToken, {secret: this.configService.get<string>('JWT_SECRET')});
+      AuthGuard.logger.debug(`decoded: ${this.objectFormatter.format(decoded)}`);
       const user = await this.userService.findOne(decoded.id);
 
       if (!user) {
@@ -49,9 +51,11 @@ export class AuthGuard implements CanActivate {
         throw new BadRequestException(ERROR_MESSAGE.E002);
       }
 
+      delete user.password;
+
       request.user = user;
 
-      AuthGuard.logger.log(`AuthGuard 종료`)
+      AuthGuard.logger.log(`AuthGuard 종료`);
       return true;
     } catch (e) {
       AuthGuard.logger.error(`error catch: ${e}`);

@@ -1,13 +1,13 @@
 import { Column, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-const ADMIN = 'ADMIN';
+const SYSTEM = 'SYSTEM';
 
 export class CommonEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column({
-        default: ADMIN,
+        default: SYSTEM,
         nullable: true
     })
     createdUser: string;
@@ -16,7 +16,7 @@ export class CommonEntity {
     createdDate: Date;
 
     @Column({
-        default: ADMIN,
+        default: SYSTEM,
         nullable: true
     })
     updatedUser: string;

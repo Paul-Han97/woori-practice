@@ -29,11 +29,6 @@ export class AppController {
 
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
-
   @ApiOperation({
     summary: '이메일을 전송',
     description: `
@@ -108,6 +103,7 @@ export class AppController {
     },
   })
   @Post('login')
+  @HttpCode(200)
   async login(@Body() loginDto: LoginDto) {
     AppController.logger.log('AppController.login() 시작');
     const result = await this.appService.login(loginDto);
