@@ -84,8 +84,6 @@ export class UserService extends CommonUtils {
       throw new NotFoundException(ERROR_MESSAGE.E001);
     }
 
-    delete result.password;
-
     const resData: ResponseData = {
       message: SUCCESS_MESSAGE.S002,
       data: result,

@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { CommonEntity } from 'src/common/typeorm/common.entity';
 import { DeliveryAddress } from 'src/delivery-address/entities/delivery-address.entity';
 import { Gender } from 'src/gender/entities/gender.entity';
@@ -8,6 +9,7 @@ export class User extends CommonEntity {
   @Column()
   email: string;
 
+  @Exclude()
   @Column()
   password: string;
 
