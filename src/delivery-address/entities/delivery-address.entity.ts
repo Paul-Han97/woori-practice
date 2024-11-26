@@ -1,6 +1,6 @@
 import { CommonEntity } from "src/common/typeorm/common.entity";
 import { User } from "src/user/entities/user.entity";
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, Generated, JoinColumn, ManyToOne } from "typeorm";
 
 @Entity()
 export class DeliveryAddress extends CommonEntity {
@@ -11,6 +11,7 @@ export class DeliveryAddress extends CommonEntity {
     address: string;
 
     @Column()
+    @Generated('increment')
     rank: number;
 
     @ManyToOne(() => User)
