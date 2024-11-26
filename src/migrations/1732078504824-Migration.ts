@@ -12,9 +12,9 @@ export class Migration1732078504824 implements MigrationInterface {
         const userList = await queryRunner.query(`SELECT id FROM "user" WHERE email IN ('male@elice.com', 'female@elice.com')`)
 
         await queryRunner.query(`INSERT INTO "order" ("orderStateId", "userId", "orderDate") VALUES ('${PROCESSING}', '${userList[0].id}', NOW())`)
-        await queryRunner.query(`INSERT INTO "order" ("orderStateId", "userId", "orderDate") VALUES ('${COMPLETE}', '${userList[0].id}', NOW())`)
+        await queryRunner.query(`INSERT INTO "order" ("orderStateId", "userId", "orderDate") VALUES ('${COMPLETE}', '${userList[0].id}', NOW() - INTERVAL '1' DAY)`)
         await queryRunner.query(`INSERT INTO "order" ("orderStateId", "userId", "orderDate") VALUES ('${IN_DELIVERY}', '${userList[1].id}', NOW())`)
-        await queryRunner.query(`INSERT INTO "order" ("orderStateId", "userId", "orderDate") VALUES ('${COMPLETE}', '${userList[1].id}', NOW())`)
+        await queryRunner.query(`INSERT INTO "order" ("orderStateId", "userId", "orderDate") VALUES ('${COMPLETE}', '${userList[1].id}', NOW() - INTERVAL '1' DAY)`)
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
