@@ -25,13 +25,14 @@ export class CommonEntity {
 
   @Exclude()
   @Column({
-    default: SYSTEM,
     nullable: true,
   })
   updatedUser: string;
 
   @Exclude()
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    nullable: true
+  })
   updatedDate: Date;
 
   toJSON() {
