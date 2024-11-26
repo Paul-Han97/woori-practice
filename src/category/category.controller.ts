@@ -2,7 +2,7 @@ import { Controller, Get, Logger } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 
-@Controller('categorys')
+@Controller('categories')
 export class CategoryController {
   public static readonly logger = new Logger(CategoryController.name);
 

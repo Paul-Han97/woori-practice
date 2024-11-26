@@ -4,7 +4,7 @@ import { Auth } from 'src/common/guards/auth.decotrator';
 import { DeliveryAddressService } from './delivery-address.service';
 import { CreateDeliveryAddressDto } from './dto/create-delivery-address.dto';
 
-@Controller('delivery-address')
+@Controller('delivery-addresses')
 export class DeliveryAddressController {
   public static readonly logger = new Logger(DeliveryAddressController.name);
 
@@ -12,9 +12,23 @@ export class DeliveryAddressController {
     private readonly deliveryAddressService: DeliveryAddressService,
   ) {}
 
+  @ApiOperation({
+    summary: `사용자의 배송지를 등록한다.`,
+    description: `
+    - name: 배송지의 이름을 의미한다.
+    - address: 배송지의 주소를 의미한다.
+    - rank: 사용자의 배송지 저장 순서를 의미한다.
+      - rank의 data type은 serial이므로 자동으로 1씩 증가한다.
+      - 사용자를 기준으로 조회했을 때 가장 빠른 rank가 대표 주소이다.`
+  })
+  @ApiBearerAuth()
+  @Auth()
   @Post()
-  create(@Body() createDeliveryAddressDto: CreateDeliveryAddressDto) {
-    return this.deliveryAddressService.create(createDeliveryAddressDto);
+  async create(@Body() createDeliveryAddressDto: CreateDeliveryAddressDto, @Request() req: any) {
+    DeliveryAddressController.logger.log('DeliveryAddressController.getByUserId() 시작');
+    const result = await this.deliveryAddressService.create(createDeliveryAddressDto, req.user);
+    DeliveryAddressController.logger.log('DeliveryAddressController.getByUserId() 종료');
+    return result;
   }
 
   @ApiOperation({

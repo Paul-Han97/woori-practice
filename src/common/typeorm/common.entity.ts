@@ -1,26 +1,41 @@
-import { Column, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Exclude, instanceToPlain } from 'class-transformer';
+import {
+  Column,
+  CreateDateColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 const SYSTEM = 'SYSTEM';
 
 export class CommonEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column({
-        default: SYSTEM,
-        nullable: true
-    })
-    createdUser: string;
+  @Exclude()
+  @Column({
+    default: SYSTEM,
+    nullable: true,
+  })
+  createdUser: string;
 
-    @CreateDateColumn()
-    createdDate: Date;
+  @Exclude()
+  @CreateDateColumn()
+  createdDate: Date;
 
-    @Column({
-        default: SYSTEM,
-        nullable: true
-    })
-    updatedUser: string;
+  @Exclude()
+  @Column({
+    nullable: true,
+  })
+  updatedUser: string;
 
-    @UpdateDateColumn()
-    updatedDate: Date;
+  @Exclude()
+  @UpdateDateColumn({
+    nullable: true
+  })
+  updatedDate: Date;
+
+  toJSON() {
+    return instanceToPlain(this);
+  }
 }

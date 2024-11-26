@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
 import { IsNumber, IsString } from "class-validator";
 
 export class CreateDeliveryAddressDto {
@@ -10,7 +10,6 @@ export class CreateDeliveryAddressDto {
     @IsString()
     address: string;
 
-    @ApiProperty()
-    @IsNumber()
+    @ApiResponseProperty()
     rank: number;
 }

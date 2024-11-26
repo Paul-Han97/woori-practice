@@ -15,6 +15,7 @@ import {
 import { DeliveryAddressRepository } from './entities/delivery-address.repository';
 import { IDeliveryAddressRepository } from './entities/delivery-address.interface';
 import { User } from 'src/user/entities/user.entity';
+import { DeliveryAddress } from './entities/delivery-address.entity';
 
 @Injectable()
 export class DeliveryAddressService extends CommonUtils {
@@ -27,7 +28,25 @@ export class DeliveryAddressService extends CommonUtils {
     super();
   }
 
-  create(createDeliveryAddressDto: CreateDeliveryAddressDto) {
+  async create(createDeliveryAddressDto: CreateDeliveryAddressDto, user: User) {
+    DeliveryAddressService.logger.log('DeliveryAddressService.create() 시작');
+    const newDeliveryAddress = new DeliveryAddress();
+    newDeliveryAddress.address = createDeliveryAddressDto.address;
+    newDeliveryAddress.name = createDeliveryAddressDto.name;
+    newDeliveryAddress.user = user;
+    newDeliveryAddress.createdUser = user.id;
+
+    await this.deliveryAddressRepository.save(newDeliveryAddress);
+
+    const resData: ResponseData = {
+      message: SUCCESS_MESSAGE.S003,
+      data: null,
+    };
+
+    DeliveryAddressService.logger.log(
+      'DeliveryAddressService.create() 종료',
+      `반환 값:\n${this.objectFormatter.format(resData)}`,
+    );
     return 'This action adds a new deliveryAddress';
   }
 
@@ -47,13 +66,7 @@ export class DeliveryAddressService extends CommonUtils {
         },
       },
       order: {
-        rank: 'ASC'
-      },
-      select: {
-        id: true,
-        address: true,
-        rank: true,
-        name: true
+        rank: 'ASC',
       }
     });
 

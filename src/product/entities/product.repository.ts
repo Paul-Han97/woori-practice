@@ -68,6 +68,7 @@ export class ProductRepository
       'product.quantity',
       'product.name',
       'product.price',
+      'product.description',
       'gender.type',
     ])
       .leftJoin('product.gender', 'gender')
