@@ -67,13 +67,7 @@ export class DeliveryAddressService extends CommonUtils {
       },
       order: {
         rank: 'ASC',
-      },
-      select: {
-        id: true,
-        address: true,
-        rank: true,
-        name: true,
-      },
+      }
     });
 
     const resData: ResponseData = {
