@@ -5,13 +5,12 @@ import {
   HttpException,
   Logger,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { ResponseBody } from '../type/response.type';
+import { Response } from 'express';
 import { HTTP_STATUS } from '../constants/common-constants';
+import { ResponseBody } from '../type/response.type';
 import { CommonUtils } from '../utils/common.util';
-import { ObjectFormatter } from '../utils/object-formatter.util';
 
-@Catch(HttpException)
+@Catch()
 export class HttpExceptionFilter
   extends CommonUtils
   implements ExceptionFilter
@@ -20,18 +19,40 @@ export class HttpExceptionFilter
 
   catch(exception: HttpException, host: ArgumentsHost) {
     this.logger.log(`GlobalExceptionFilter 시작`);
+
     const context = host.switchToHttp();
     const res = context.getResponse<Response>();
-    const status = exception.getStatus();
+
+    const isInternalServerError = !(exception instanceof HttpException);
+    if (isInternalServerError) {
+      this.logger.error((<Error>exception).stack);
+      const body: ResponseBody = {
+        body: {
+          status: HTTP_STATUS['500'],
+          message: (<Error>exception).message,
+          data: null,
+        },
+      };
+
+      this.logger.log(
+        `GlobalExceptionFilter 종료`,
+        `반환 값:\n${this.objectFormatter.format(body)}`,
+      );
+
+      res.status(500).json(body);
+      return;
+    }
+
+    const statusCode = exception.getStatus();
     const message = (<any>exception.getResponse()).message;
 
-    if (status === 500) {
+    if (statusCode === 500) {
       this.logger.error(exception.message, exception.stack);
     }
 
     const body: ResponseBody = {
       body: {
-        status: HTTP_STATUS[status],
+        status: HTTP_STATUS[statusCode],
         message,
         data: null,
       },
@@ -41,7 +62,7 @@ export class HttpExceptionFilter
       `GlobalExceptionFilter 종료`,
       `반환 값:\n${this.objectFormatter.format(body)}`,
     );
-    
-    res.status(status).json(body);
+
+    res.status(statusCode).json(body);
   }
 }
