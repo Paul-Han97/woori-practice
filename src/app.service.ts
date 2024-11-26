@@ -158,7 +158,10 @@ export class AppService extends CommonUtils {
 
     const resData: ResponseData = {
       message: SUCCESS_MESSAGE.S003,
-      data: { access: token },
+      data: {
+        access: token,
+        userId: user.id,
+      },
     };
 
     AppService.logger.log(
