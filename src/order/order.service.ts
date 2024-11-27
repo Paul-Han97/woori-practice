@@ -3,19 +3,28 @@ import {
   Inject,
   Injectable,
   Logger,
+  NotFoundException
 } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
-import { CommonUtils } from 'src/common/utils/common.util';
-import { UserService } from 'src/user/user.service';
-import { User } from 'src/user/entities/user.entity';
 import {
   ERROR_MESSAGE,
+  ORDER_STATE_TYPE,
   SUCCESS_MESSAGE,
 } from 'src/common/constants/common-constants';
-import { OrderRepository } from './entities/order.repository';
-import { IOrderRepository } from './entities/order.interface';
 import { ResponseData } from 'src/common/type/response.type';
+import { CommonUtils } from 'src/common/utils/common.util';
+import { DeliveryAddress } from 'src/delivery-address/entities/delivery-address.entity';
+import { OrderProduct } from 'src/order-product/entities/order-product.entity';
+import { IOrderProductRepository } from 'src/order-product/entities/order-product.interface';
+import { OrderProductRepository } from 'src/order-product/entities/order-product.repository';
+import { OrderState } from 'src/order-state/entities/order-state.entity';
+import { IProductRepository } from 'src/product/entities/product.interface';
+import { ProductRepository } from 'src/product/entities/product.repository';
+import { User } from 'src/user/entities/user.entity';
+import { DataSource, EntityManager } from 'typeorm';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { Order } from './entities/order.entity';
+import { IOrderRepository } from './entities/order.interface';
+import { OrderRepository } from './entities/order.repository';
 
 @Injectable()
 export class OrderService extends CommonUtils {
@@ -24,7 +33,11 @@ export class OrderService extends CommonUtils {
   constructor(
     @Inject(OrderRepository)
     private readonly orderRepository: IOrderRepository,
-    private readonly userService: UserService,
+    @Inject(OrderProductRepository)
+    private readonly orderProductRepository: IOrderProductRepository,
+    @Inject(ProductRepository)
+    private readonly productRepository: IProductRepository,
+    private readonly dataSource: DataSource,
   ) {
     super();
   }
@@ -44,6 +57,80 @@ export class OrderService extends CommonUtils {
 
     OrderService.logger.log(
       'OrderService.findByUserId() 종료',
+      `반환 값:\n${this.objectFormatter.format(resData)}`,
+    );
+    return resData;
+  }
+
+  async create(createOrderDto: CreateOrderDto, user: User) {
+    OrderService.logger.log('OrderService.create() 시작');
+
+    const deliveryAddress = new DeliveryAddress();
+    deliveryAddress.id = createOrderDto.deliveryAddressId;
+
+    const orderState = new OrderState();
+    orderState.id = this.uuidGenerator.generate(ORDER_STATE_TYPE.PROCESSING);
+
+    const order = new Order();
+    order.recipient = createOrderDto.recipient;
+    order.recipientPhone = createOrderDto.recipientPhone;
+    order.deliveryAddress = deliveryAddress;
+    order.orderState = orderState;
+    order.orderDate = new Date();
+    order.createdUser = user.id;
+    order.user = user;
+
+    await this.dataSource.transaction<Order>(
+      async (manager: EntityManager): Promise<Order> => {
+        const productRepository = manager.withRepository(
+          this.productRepository,
+        );
+
+        const orderProductRepository = manager.withRepository(
+          this.orderProductRepository,
+        );
+
+        const newOrder = await manager.save(order);
+
+        const productList = createOrderDto.productList;
+        for (let i = 0; i < productList.length; i++) {
+          const product = await this.productRepository.findOneBy({
+            id: productList[i].productId,
+          });
+
+          if (!product) {
+            throw new NotFoundException(ERROR_MESSAGE.E007);
+          }
+
+          if (product.quantity - productList[i].count <= 0) {
+            throw new BadRequestException(ERROR_MESSAGE.E002);
+          }
+
+          product.quantity -= productList[i].count;
+          product.updatedUser = user.id;
+
+          await productRepository.save(product);
+
+          const orderProduct = new OrderProduct();
+          orderProduct.order = newOrder;
+          orderProduct.product = product;
+          orderProduct.count = productList[i].count;
+          orderProduct.createdUser = user.id;
+
+          await orderProductRepository.save(orderProduct);
+        }
+
+        return;
+      },
+    );
+
+    const resData: ResponseData = {
+      message: SUCCESS_MESSAGE.S003,
+      data: null,
+    };
+
+    OrderService.logger.log(
+      'OrderService.create() 종료',
       `반환 값:\n${this.objectFormatter.format(resData)}`,
     );
     return resData;
