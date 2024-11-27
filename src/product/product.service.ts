@@ -1,13 +1,10 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { ProductRepository } from './entities/product.repository';
-import { IProductRepository } from './entities/product.interface';
-import { ResponseData } from 'src/common/type/response.type';
 import { ERROR_MESSAGE, SUCCESS_MESSAGE } from 'src/common/constants/common-constants';
+import { ResponseData } from 'src/common/type/response.type';
 import { CommonUtils } from 'src/common/utils/common.util';
-import { ProductImage } from 'src/product-image/entities/product-image.entity';
 import { GetProductFilterDto } from './dto/get-product-filter.dto';
+import { IProductRepository } from './entities/product.interface';
+import { ProductRepository } from './entities/product.repository';
 
 @Injectable()
 export class ProductService extends CommonUtils {

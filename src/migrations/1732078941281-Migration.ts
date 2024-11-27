@@ -13,15 +13,15 @@ export class Migration1732078941281 implements MigrationInterface {
         const orderList1 = await queryRunner.query(`SELECT id FROM "order" WHERE "userId" = '${userList[0].id}'`);
         const orderList2 = await queryRunner.query(`SELECT id FROM "order" WHERE "userId" = '${userList[1].id}'`);
 
-        await queryRunner.query(`INSERT INTO "order_product" ("orderId", "productId") VALUES ('${orderList1[0].id}', '${productList1[0].id}')`);
-        await queryRunner.query(`INSERT INTO "order_product" ("orderId", "productId") VALUES ('${orderList1[0].id}', '${productList1[1].id}')`);
-        await queryRunner.query(`INSERT INTO "order_product" ("orderId", "productId") VALUES ('${orderList1[1].id}', '${productList2[0].id}')`);
-        await queryRunner.query(`INSERT INTO "order_product" ("orderId", "productId") VALUES ('${orderList1[1].id}', '${productList2[1].id}')`);
+        await queryRunner.query(`INSERT INTO "order_product" (count, "orderId", "productId") VALUES (1, '${orderList1[0].id}', '${productList1[0].id}')`);
+        await queryRunner.query(`INSERT INTO "order_product" (count, "orderId", "productId") VALUES (2, '${orderList1[0].id}', '${productList1[1].id}')`);
+        await queryRunner.query(`INSERT INTO "order_product" (count, "orderId", "productId") VALUES (1, '${orderList1[1].id}', '${productList2[0].id}')`);
+        await queryRunner.query(`INSERT INTO "order_product" (count, "orderId", "productId") VALUES (3, '${orderList1[1].id}', '${productList2[1].id}')`);
 
-        await queryRunner.query(`INSERT INTO "order_product" ("orderId", "productId") VALUES ('${orderList2[0].id}', '${productList3[0].id}')`);
-        await queryRunner.query(`INSERT INTO "order_product" ("orderId", "productId") VALUES ('${orderList2[0].id}', '${productList3[1].id}')`);
-        await queryRunner.query(`INSERT INTO "order_product" ("orderId", "productId") VALUES ('${orderList2[1].id}', '${productList4[0].id}')`);
-        await queryRunner.query(`INSERT INTO "order_product" ("orderId", "productId") VALUES ('${orderList2[1].id}', '${productList4[1].id}')`);
+        await queryRunner.query(`INSERT INTO "order_product" (count, "orderId", "productId") VALUES (1, '${orderList2[0].id}', '${productList3[0].id}')`);
+        await queryRunner.query(`INSERT INTO "order_product" (count, "orderId", "productId") VALUES (2, '${orderList2[0].id}', '${productList3[1].id}')`);
+        await queryRunner.query(`INSERT INTO "order_product" (count, "orderId", "productId") VALUES (1, '${orderList2[1].id}', '${productList4[0].id}')`);
+        await queryRunner.query(`INSERT INTO "order_product" (count, "orderId", "productId") VALUES (4, '${orderList2[1].id}', '${productList4[1].id}')`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
