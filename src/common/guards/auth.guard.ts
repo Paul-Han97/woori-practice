@@ -9,19 +9,18 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { ERROR_MESSAGE, TOKEN_SCHEMA } from '../constants/common-constants';
 import { ConfigService } from '@nestjs/config';
-import { CommonUtils } from '../utils/common.util';
+import { UtilService } from '../utils/util.service';
 
 @Injectable()
-export class AuthGuard extends CommonUtils implements CanActivate {
+export class AuthGuard implements CanActivate {
   private static readonly logger = new Logger(AuthGuard.name);
 
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
-  ) {
-    super();
-  }
+    private readonly configService: ConfigService,
+    private readonly utilService: UtilService
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
@@ -43,7 +42,7 @@ export class AuthGuard extends CommonUtils implements CanActivate {
       }
 
       const decoded = this.jwtService.verify(accessToken, {secret: this.configService.get<string>('JWT_SECRET')});
-      AuthGuard.logger.debug(`decoded: ${this.objectFormatter.format(decoded)}`);
+      AuthGuard.logger.debug(`decoded: ${this.utilService.objectFormatter.format(decoded)}`);
       const user = await this.userService.findOne(decoded.id);
 
       if (!user) {

@@ -1,4 +1,5 @@
 /description
+*.pem
 
 # compiled output
 /dist

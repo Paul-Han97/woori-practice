@@ -10,7 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { MailOptions } from 'nodemailer/lib/json-transport';
 import { SendEmailDto } from './dto/send-email.dto';
-import { CommonUtils } from './common/utils/common.util';
+import { UtilService } from './common/utils/util.service';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { VerificationDto } from './dto/verification.dto';
@@ -25,7 +25,7 @@ import { JwtService } from '@nestjs/jwt';
 import { IUserRepository } from './user/entities/user.interface';
 
 @Injectable()
-export class AppService extends CommonUtils {
+export class AppService {
   public static logger = new Logger(AppService.name);
 
   constructor(
@@ -36,9 +36,8 @@ export class AppService extends CommonUtils {
     private readonly userRepository: IUserRepository,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-  ) {
-    super();
-  }
+    private readonly utilService: UtilService,
+  ) {}
 
   getHello(): string {
     return 'Hello World!';
@@ -91,10 +90,10 @@ export class AppService extends CommonUtils {
       message: SUCCESS_MESSAGE.S003,
       data: null,
     };
-
+    
     AppService.logger.log(
       'AppService.sendEmail() 종료',
-      `반환 값:\n${this.objectFormatter.format(resData)}`,
+      `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
     );
 
     return result;
@@ -123,7 +122,7 @@ export class AppService extends CommonUtils {
 
     AppService.logger.log(
       'AppService.verification() 종료',
-      `반환 값:\n${this.objectFormatter.format(resData)}`,
+      `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
     );
     return resData;
   }
@@ -137,7 +136,7 @@ export class AppService extends CommonUtils {
       throw new BadRequestException(ERROR_MESSAGE.E006);
     }
 
-    const isMatch = await this.passwordManager.compare(
+    const isMatch = await this.utilService.passwordManager.compare(
       loginDto.password,
       user.password,
     );
@@ -166,7 +165,7 @@ export class AppService extends CommonUtils {
 
     AppService.logger.log(
       'AppService.login() 종료',
-      `반환 값:\n${this.objectFormatter.format(resData)}`,
+      `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
     );
     return resData;
   }

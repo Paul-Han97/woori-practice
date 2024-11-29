@@ -10,7 +10,7 @@ import {
   GENDER_TYPE,
   SUCCESS_MESSAGE,
 } from 'src/common/constants/common-constants';
-import { CommonUtils } from 'src/common/utils/common.util';
+import { UtilService } from 'src/common/utils/util.service';
 import { UuidGenerator } from 'src/common/utils/uuid-generator.util';
 import { Gender } from 'src/gender/entities/gender.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -22,18 +22,14 @@ import { UserRepository } from './entities/user.repository';
 import { ResponseBody, ResponseData } from 'src/common/type/response.type';
 
 @Injectable()
-export class UserService extends CommonUtils {
+export class UserService {
   public static readonly logger = new Logger(UserService.name);
 
   constructor(
     @Inject(UserRepository)
     private readonly userRepository: IUserRepository,
-    // private readonly uuidGenerator: UuidGenerator,
-    // private readonly passwordManager: PasswordManager,
-    // private readonly objectFormatter: ObjectFormatter,
-  ) {
-    super();
-  }
+    private readonly utilService: UtilService
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     UserService.logger.log(`UserService.create() 시작`);
@@ -47,12 +43,12 @@ export class UserService extends CommonUtils {
     }
 
     const gender = new Gender();
-    gender.id = this.uuidGenerator.generate(createUserDto.gender);
+    gender.id = this.utilService.uuidGenerator.generate(createUserDto.gender);
 
     const user = new User();
     user.name = createUserDto.name;
     user.email = createUserDto.email;
-    user.password = await this.passwordManager.hash(createUserDto.password);
+    user.password = await this.utilService.passwordManager.hash(createUserDto.password);
     user.gender = gender;
 
     await this.userRepository.save(user);
@@ -64,7 +60,7 @@ export class UserService extends CommonUtils {
 
     UserService.logger.log(
       `UserService.create() 종료`,
-      `반환 값:\n${this.objectFormatter.format(resData)}`,
+      `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
     );
     return resData;
   }
@@ -91,7 +87,7 @@ export class UserService extends CommonUtils {
 
     UserService.logger.log(
       `UserService.findByEmail() 종료`,
-      `반환 값:\n${this.objectFormatter.format(resData)}`,
+      `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
     );
     return resData;
   }

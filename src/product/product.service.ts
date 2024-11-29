@@ -1,21 +1,20 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ERROR_MESSAGE, SUCCESS_MESSAGE } from 'src/common/constants/common-constants';
 import { ResponseData } from 'src/common/type/response.type';
-import { CommonUtils } from 'src/common/utils/common.util';
+import { UtilService } from 'src/common/utils/util.service';
 import { GetProductFilterDto } from './dto/get-product-filter.dto';
 import { IProductRepository } from './entities/product.interface';
 import { ProductRepository } from './entities/product.repository';
 
 @Injectable()
-export class ProductService extends CommonUtils {
+export class ProductService {
   public static readonly logger = new Logger(ProductService.name);
 
   constructor(
     @Inject(ProductRepository)
     private readonly productRepository: IProductRepository,
-  ) {
-    super();
-  }
+    private readonly utilService: UtilService
+  ) {}
   async getRankedProductList() {
     ProductService.logger.log('ProductService.getRankedProductList() 시작');
     const rankedProductList = await this.productRepository.findRankedProduct();
@@ -27,7 +26,7 @@ export class ProductService extends CommonUtils {
 
     ProductService.logger.log(
       'ProductService.getRankedProductList() 종료',
-      `반환 값:\n${this.objectFormatter.format(resData)}`,
+      `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
     );
     return resData;
   }
@@ -49,7 +48,7 @@ export class ProductService extends CommonUtils {
 
     ProductService.logger.log(
       'ProductService.getByCategoryId() 종료',
-      `반환 값:\n${this.objectFormatter.format(resData)}`,
+      `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
     );
     return resData;
   }
