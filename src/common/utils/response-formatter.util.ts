@@ -1,5 +1,7 @@
+import { Injectable } from '@nestjs/common';
 import { ResponseBody } from '../type/response.type';
 
+@Injectable()
 export class ResponseFormatter {
   public message: string;
   public data: any;

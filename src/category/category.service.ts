@@ -1,20 +1,19 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { SUCCESS_MESSAGE } from 'src/common/constants/common-constants';
 import { ResponseData } from 'src/common/type/response.type';
-import { CommonUtils } from 'src/common/utils/common.util';
+import { UtilService } from 'src/common/utils/util.service';
 import { ICategoryRepository } from './entities/category.interface';
 import { CategoryRepository } from './entities/category.repository';
 
 @Injectable()
-export class CategoryService extends CommonUtils {
+export class CategoryService {
   public static readonly logger = new Logger(CategoryService.name);
 
   constructor(
     @Inject(CategoryRepository)
     private readonly categoryRepository: ICategoryRepository,
-  ) {
-    super();
-  }
+    private readonly utilService: UtilService
+  ) {}
 
   async findAll() {
     CategoryService.logger.log('CategoryService.findAll() 시작');
@@ -35,7 +34,7 @@ export class CategoryService extends CommonUtils {
     
     CategoryService.logger.log(
       'CategoryService.findAll() 종료',
-      `반환 값:\n${this.objectFormatter.format(resData)}`,
+      `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
     );
     return resData;
   }

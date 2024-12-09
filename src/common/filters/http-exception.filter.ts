@@ -8,13 +8,9 @@ import {
 import { Response } from 'express';
 import { HTTP_STATUS } from '../constants/common-constants';
 import { ResponseBody } from '../type/response.type';
-import { CommonUtils } from '../utils/common.util';
 
 @Catch()
-export class HttpExceptionFilter
-  extends CommonUtils
-  implements ExceptionFilter
-{
+export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);
 
   catch(exception: HttpException, host: ArgumentsHost) {
@@ -36,20 +32,20 @@ export class HttpExceptionFilter
 
       this.logger.log(
         `GlobalExceptionFilter 종료`,
-        `반환 값:\n${this.objectFormatter.format(body)}`,
+        `반환 값:\n${JSON.stringify(body)}`,
       );
-
+      
       res.status(500).json(body);
       return;
     }
-
+    
     const statusCode = exception.getStatus();
     const message = (<any>exception.getResponse()).message;
-
+    
     if (statusCode === 500) {
       this.logger.error(exception.message, exception.stack);
     }
-
+    
     const body: ResponseBody = {
       body: {
         status: HTTP_STATUS[statusCode],
@@ -57,10 +53,10 @@ export class HttpExceptionFilter
         data: null,
       },
     };
-
+    
     this.logger.log(
       `GlobalExceptionFilter 종료`,
-      `반환 값:\n${this.objectFormatter.format(body)}`,
+      `반환 값:\n${JSON.stringify(body)}`,
     );
 
     res.status(statusCode).json(body);

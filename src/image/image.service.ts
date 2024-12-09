@@ -1,26 +1,69 @@
-import { Injectable } from '@nestjs/common';
-import { CreateImageDto } from './dto/create-image.dto';
+import { Inject, Injectable } from '@nestjs/common';
 import { UpdateImageDto } from './dto/update-image.dto';
+import { Image } from './entities/image.entity';
+import { ProductImage } from 'src/product-image/entities/product-image.entity';
+import { ProductRepository } from 'src/product/entities/product.repository';
+import { IProductRepository } from 'src/product/entities/product.interface';
+import { CreateImageDto, UploadImageDto } from './dto/create-image.dto';
+import { User } from 'src/user/entities/user.entity';
+import { ImageRepository } from './entities/image.repository';
+import { IImageRepository } from './entities/image.interface';
+import { ProductImageRepository } from 'src/product-image/entities/product-image.repository';
+import { IProductImageRepository } from 'src/product-image/entities/product-image.interface';
+import { DataSource, EntityManager } from 'typeorm';
+import { ResponseData } from 'src/common/type/response.type';
+import { SUCCESS_MESSAGE } from 'src/common/constants/common-constants';
 
 @Injectable()
 export class ImageService {
-  create(createImageDto: CreateImageDto) {
-    return 'This action adds a new image';
-  }
+  constructor(
+    @Inject(ProductImageRepository)
+    private readonly productImageRepository: IProductImageRepository,
 
-  findAll() {
-    return `This action returns all image`;
-  }
+    @Inject(ImageRepository)
+    private readonly imageRepository: IImageRepository,
 
-  findOne(id: number) {
-    return `This action returns a #${id} image`;
-  }
+    @Inject(ProductRepository)
+    private readonly productRepository: IProductRepository,
 
-  update(id: number, updateImageDto: UpdateImageDto) {
-    return `This action updates a #${id} image`;
-  }
+    private readonly dataSource: DataSource
+  ) {}
 
-  remove(id: number) {
-    return `This action removes a #${id} image`;
+  async create(
+    createImageDto: CreateImageDto,
+    uploadImageDto: UploadImageDto,
+    user: User,
+  ) {
+    const product = await this.productRepository.findById(
+      createImageDto.productId,
+    );
+
+    const image = new Image();
+    image.url = uploadImageDto.filename;
+    // image.ext =
+    image.createdUser = user.id;
+
+    const productImage = new ProductImage();
+    productImage.image = image;
+    productImage.product = product;
+    productImage.createdUser = user.id;
+
+    await this.dataSource.transaction<Image>(
+      async (manager: EntityManager): Promise<Image> => {
+        const productImageRepository = manager.withRepository(this.productImageRepository);
+
+        const newImage = await manager.save(image);
+        await productImageRepository.save(productImage);
+
+        return newImage;
+      }
+    )
+
+    const resData: ResponseData = {
+      message: SUCCESS_MESSAGE.S003,
+      data: null
+    }
+
+    return resData;
   }
 }

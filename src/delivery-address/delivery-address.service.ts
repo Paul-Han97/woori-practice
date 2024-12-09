@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateDeliveryAddressDto } from './dto/create-delivery-address.dto';
 import { UpdateDeliveryAddressDto } from './dto/update-delivery-address.dto';
-import { CommonUtils } from 'src/common/utils/common.util';
+import { UtilService } from 'src/common/utils/util.service';
 import { ResponseData } from 'src/common/type/response.type';
 import {
   ERROR_MESSAGE,
@@ -18,15 +18,14 @@ import { User } from 'src/user/entities/user.entity';
 import { DeliveryAddress } from './entities/delivery-address.entity';
 
 @Injectable()
-export class DeliveryAddressService extends CommonUtils {
+export class DeliveryAddressService {
   public static readonly logger = new Logger(DeliveryAddressService.name);
 
   constructor(
     @Inject(DeliveryAddressRepository)
     private readonly deliveryAddressRepository: IDeliveryAddressRepository,
-  ) {
-    super();
-  }
+    private readonly utilService: UtilService,
+  ) {}
 
   async create(createDeliveryAddressDto: CreateDeliveryAddressDto, user: User) {
     DeliveryAddressService.logger.log('DeliveryAddressService.create() 시작');
@@ -45,7 +44,7 @@ export class DeliveryAddressService extends CommonUtils {
 
     DeliveryAddressService.logger.log(
       'DeliveryAddressService.create() 종료',
-      `반환 값:\n${this.objectFormatter.format(resData)}`,
+      `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
     );
     return 'This action adds a new deliveryAddress';
   }
@@ -77,7 +76,7 @@ export class DeliveryAddressService extends CommonUtils {
 
     DeliveryAddressService.logger.log(
       `DeliveryAddressService.getByUserId() 종료`,
-      `반환 값:\n${this.objectFormatter.format(resData)}`,
+      `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
     );
     return resData;
   }
