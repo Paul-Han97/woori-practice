@@ -94,7 +94,6 @@ export class UserService {
 
   findAll() {
     const uuid = new UuidGenerator().generate(GENDER_TYPE.MALE);
-    console.log(uuid);
     return `This action returns all user`;
   }
 
