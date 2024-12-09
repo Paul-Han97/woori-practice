@@ -11,7 +11,7 @@ import {
   SUCCESS_MESSAGE,
 } from 'src/common/constants/common-constants';
 import { ResponseData } from 'src/common/type/response.type';
-import { CommonUtils } from 'src/common/utils/common.util';
+import { UtilService } from 'src/common/utils/util.service';
 import { DeliveryAddress } from 'src/delivery-address/entities/delivery-address.entity';
 import { OrderProduct } from 'src/order-product/entities/order-product.entity';
 import { IOrderProductRepository } from 'src/order-product/entities/order-product.interface';
@@ -27,7 +27,7 @@ import { IOrderRepository } from './entities/order.interface';
 import { OrderRepository } from './entities/order.repository';
 
 @Injectable()
-export class OrderService extends CommonUtils {
+export class OrderService {
   public static readonly logger = new Logger(OrderService.name);
 
   constructor(
@@ -38,9 +38,8 @@ export class OrderService extends CommonUtils {
     @Inject(ProductRepository)
     private readonly productRepository: IProductRepository,
     private readonly dataSource: DataSource,
-  ) {
-    super();
-  }
+    private readonly utilService: UtilService
+  ) {}
 
   async findByUserId(userId: string, loginUser: User) {
     OrderService.logger.log('OrderService.findByUserId() 시작');
@@ -57,7 +56,7 @@ export class OrderService extends CommonUtils {
 
     OrderService.logger.log(
       'OrderService.findByUserId() 종료',
-      `반환 값:\n${this.objectFormatter.format(resData)}`,
+      `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
     );
     return resData;
   }
@@ -69,7 +68,7 @@ export class OrderService extends CommonUtils {
     deliveryAddress.id = createOrderDto.deliveryAddressId;
 
     const orderState = new OrderState();
-    orderState.id = this.uuidGenerator.generate(ORDER_STATE_TYPE.PROCESSING);
+    orderState.id = this.utilService.uuidGenerator.generate(ORDER_STATE_TYPE.PROCESSING);
 
     const order = new Order();
     order.recipient = createOrderDto.recipient;
@@ -131,7 +130,7 @@ export class OrderService extends CommonUtils {
 
     OrderService.logger.log(
       'OrderService.create() 종료',
-      `반환 값:\n${this.objectFormatter.format(resData)}`,
+      `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
     );
     return resData;
   }

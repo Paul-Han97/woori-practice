@@ -16,6 +16,10 @@ export const configModuleOptions: ConfigModuleOptions = {
     EMAIL_PASSWORD: Joi.string().required(),
     EMAIL_HOST: Joi.string().hostname().required(),
     EMAIL_PORT: Joi.number().port().required(),
+    AWS_S3_ACCESS: Joi.string().required(),
+    AWS_S3_SECRET: Joi.string().required(),
+    AWS_S3_BUCKET_NAME: Joi.string().required(),
+    AWS_REGION: Joi.string().required()
   }),
   isGlobal: true,
 };
