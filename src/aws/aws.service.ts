@@ -6,6 +6,7 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as sharp from 'sharp';
 import { UtilService } from 'src/common/utils/util.service';
 import { CreateImageDto, UploadImageDto } from 'src/image/dto/create-image.dto';
 import { User } from 'src/user/entities/user.entity';
@@ -36,15 +37,31 @@ export class AwsService {
   async imageUpload(createImageDto: CreateImageDto): Promise<UploadImageDto> {
     AwsService.logger.log('AwsService.imageUpload() 시작');
 
+    const PRIMARY_MAX_SIZE = 200;
+
     // fileName: string, file: Express.Multer.File, ext: string
     const uuid = this.utilService.uuidGenerator.generate();
     const filename = `${createImageDto.productId}/${uuid}`;
     const ext = this.getFileExt(createImageDto.file);
 
+    const imageSharp = sharp(createImageDto.file.buffer);
+    const metadata = await imageSharp.metadata();
+    const width = metadata.width;
+    const height = metadata.height;
+
+    console.log(width, height);
+
+    const buffer = await imageSharp
+      .resize({
+        width: width > PRIMARY_MAX_SIZE ? PRIMARY_MAX_SIZE : width,
+        height: height > PRIMARY_MAX_SIZE ? PRIMARY_MAX_SIZE : height,
+      })
+      .toBuffer();
+
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
       Key: filename,
-      Body: createImageDto.file.buffer,
+      Body: buffer,
       ContentType: `image/${ext}`,
     });
 
