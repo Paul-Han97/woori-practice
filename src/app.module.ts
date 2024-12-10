@@ -18,6 +18,9 @@ import { UserModule } from './user/user.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { TypeOrmCustomModule } from './common/typeorm/custom.module';
 import { UserRepository } from './user/entities/user.repository';
+import { ChatModule } from './chat/chat.module'
+import { RoomModule } from './room/room.module';
+import { RoomUserModule } from './room-user/room-user.module';
 
 @Module({
   imports: [
@@ -44,6 +47,9 @@ import { UserRepository } from './user/entities/user.repository';
     ProductImageModule,
     ProductModule,
     OrderModule,
+    ChatModule,
+    RoomModule,
+    RoomUserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

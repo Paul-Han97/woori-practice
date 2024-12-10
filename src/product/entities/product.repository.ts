@@ -1,7 +1,7 @@
 import { CustomRepository } from 'src/common/typeorm/custom.decorator';
 import { Repository } from 'typeorm';
 import { Product } from './product.entity';
-import { IProductRepository } from './product.interface';
+import { IProductRepository } from './product.repository.interface';
 import { take } from 'rxjs';
 import { GetProductFilterDto } from '../dto/get-product-filter.dto';
 

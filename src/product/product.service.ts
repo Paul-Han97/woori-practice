@@ -3,11 +3,12 @@ import { ERROR_MESSAGE, SUCCESS_MESSAGE } from 'src/common/constants/common-cons
 import { ResponseData } from 'src/common/type/response.type';
 import { UtilService } from 'src/common/utils/util.service';
 import { GetProductFilterDto } from './dto/get-product-filter.dto';
-import { IProductRepository } from './entities/product.interface';
+import { IProductRepository } from './entities/product.repository.interface';
 import { ProductRepository } from './entities/product.repository';
+import { IProductService } from './product.service.interface';
 
 @Injectable()
-export class ProductService {
+export class ProductService implements IProductService {
   public static readonly logger = new Logger(ProductService.name);
 
   constructor(
@@ -15,7 +16,7 @@ export class ProductService {
     private readonly productRepository: IProductRepository,
     private readonly utilService: UtilService
   ) {}
-  async getRankedProductList() {
+  async getRankedProductList(): Promise<ResponseData> {
     ProductService.logger.log('ProductService.getRankedProductList() 시작');
     const rankedProductList = await this.productRepository.findRankedProduct();
 
@@ -34,7 +35,7 @@ export class ProductService {
   async getByCategoryId(
     categoryId: string,
     getProductFilterDto: GetProductFilterDto,
-  ) {
+  ): Promise<ResponseData> {
     ProductService.logger.log('ProductService.getByCategoryId() 시작');
     const productList = await this.productRepository.findByCategoryId(
       categoryId,
@@ -53,7 +54,7 @@ export class ProductService {
     return resData;
   }
 
-  async getById(id: string) {
+  async getById(id: string): Promise<ResponseData> {
     ProductService.logger.log('ProductService.getById() 시작');
     const product = await this.productRepository.findById(id);
 

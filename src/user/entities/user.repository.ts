@@ -1,7 +1,7 @@
 import { CustomRepository } from 'src/common/typeorm/custom.decorator';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
-import { IUserRepository } from './user.interface';
+import { IUserRepository } from './user.repository.interface';
 
 @CustomRepository(User)
 export class UserRepository

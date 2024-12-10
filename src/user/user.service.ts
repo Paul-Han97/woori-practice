@@ -7,31 +7,29 @@ import {
 } from '@nestjs/common';
 import {
   ERROR_MESSAGE,
-  GENDER_TYPE,
   SUCCESS_MESSAGE,
 } from 'src/common/constants/common-constants';
+import { ResponseData } from 'src/common/type/response.type';
 import { UtilService } from 'src/common/utils/util.service';
-import { UuidGenerator } from 'src/common/utils/uuid-generator.util';
 import { Gender } from 'src/gender/entities/gender.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetUserDto } from './dto/get-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { IUserRepository } from './entities/user.interface';
 import { UserRepository } from './entities/user.repository';
-import { ResponseBody, ResponseData } from 'src/common/type/response.type';
+import { IUserRepository } from './entities/user.repository.interface';
+import { IUserService } from './user.service.interface';
 
 @Injectable()
-export class UserService {
+export class UserService implements IUserService {
   public static readonly logger = new Logger(UserService.name);
 
   constructor(
     @Inject(UserRepository)
     private readonly userRepository: IUserRepository,
-    private readonly utilService: UtilService
+    private readonly utilService: UtilService,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<ResponseData> {
     UserService.logger.log(`UserService.create() 시작`);
 
     const savedUser = await this.userRepository.findOneBy({
@@ -48,7 +46,9 @@ export class UserService {
     const user = new User();
     user.name = createUserDto.name;
     user.email = createUserDto.email;
-    user.password = await this.utilService.passwordManager.hash(createUserDto.password);
+    user.password = await this.utilService.passwordManager.hash(
+      createUserDto.password,
+    );
     user.gender = gender;
 
     await this.userRepository.save(user);
@@ -65,10 +65,10 @@ export class UserService {
     return resData;
   }
 
-  async findByEmail(getUserDto: GetUserDto) {
+  async findByEmail(getUserDto: GetUserDto): Promise<ResponseData> {
     UserService.logger.log(`UserService.findByEmail() 시작`);
 
-    if(!getUserDto.email) { 
+    if (!getUserDto.email) {
       throw new BadRequestException(ERROR_MESSAGE.E002);
     }
 
@@ -92,20 +92,7 @@ export class UserService {
     return resData;
   }
 
-  findAll() {
-    const uuid = new UuidGenerator().generate(GENDER_TYPE.MALE);
-    return `This action returns all user`;
-  }
-
-  async findOne(id: string) {
+  async findOne(id: string): Promise<User> {
     return await this.userRepository.findOneBy({ id });
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 }

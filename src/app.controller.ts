@@ -1,15 +1,11 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
+  Inject,
   Logger,
   Post,
-  Response,
 } from '@nestjs/common';
-import { AppService } from './app.service';
-import { SendEmailDto } from './dto/send-email.dto';
-import { VerificationDto } from './dto/verification.dto';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -17,17 +13,24 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
+import { AppService } from './app.service';
 import {
   ERROR_MESSAGE,
   SUCCESS_MESSAGE,
 } from './common/constants/common-constants';
 import { LoginDto } from './dto/login.dto';
+import { SendEmailDto } from './dto/send-email.dto';
+import { VerificationDto } from './dto/verification.dto';
+import { IAppService } from './app.service.interface';
 
 @Controller()
 export class AppController {
   public static logger = new Logger(AppController.name);
 
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    @Inject(AppService)
+    private readonly appService: IAppService,
+  ) {}
 
   @ApiOperation({
     summary: '이메일을 전송',
