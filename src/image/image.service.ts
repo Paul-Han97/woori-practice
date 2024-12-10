@@ -1,21 +1,24 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { UpdateImageDto } from './dto/update-image.dto';
-import { Image } from './entities/image.entity';
-import { ProductImage } from 'src/product-image/entities/product-image.entity';
-import { ProductRepository } from 'src/product/entities/product.repository';
-import { IProductRepository } from 'src/product/entities/product.interface';
-import { CreateImageDto, UploadImageDto } from './dto/create-image.dto';
-import { User } from 'src/user/entities/user.entity';
-import { ImageRepository } from './entities/image.repository';
-import { IImageRepository } from './entities/image.interface';
-import { ProductImageRepository } from 'src/product-image/entities/product-image.repository';
-import { IProductImageRepository } from 'src/product-image/entities/product-image.interface';
-import { DataSource, EntityManager } from 'typeorm';
-import { ResponseData } from 'src/common/type/response.type';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { SUCCESS_MESSAGE } from 'src/common/constants/common-constants';
+import { ResponseData } from 'src/common/type/response.type';
+import { UtilService } from 'src/common/utils/util.service';
+import { ProductImage } from 'src/product-image/entities/product-image.entity';
+import { IProductImageRepository } from 'src/product-image/entities/product-image.repository.interface';
+import { ProductImageRepository } from 'src/product-image/entities/product-image.repository';
+import { IProductRepository } from 'src/product/entities/product.repository.interface';
+import { ProductRepository } from 'src/product/entities/product.repository';
+import { User } from 'src/user/entities/user.entity';
+import { DataSource, EntityManager } from 'typeorm';
+import { CreateImageDto, UploadImageDto } from './dto/create-image.dto';
+import { Image } from './entities/image.entity';
+import { ImageRepository } from './entities/image.repository';
+import { IImageRepository } from './entities/image.repository.interface';
+import { IImageService } from './image.service.interface';
 
 @Injectable()
-export class ImageService {
+export class ImageService implements IImageService {
+  public static readonly logger = new Logger(ImageService.name);
+
   constructor(
     @Inject(ProductImageRepository)
     private readonly productImageRepository: IProductImageRepository,
@@ -26,7 +29,8 @@ export class ImageService {
     @Inject(ProductRepository)
     private readonly productRepository: IProductRepository,
 
-    private readonly dataSource: DataSource
+    private readonly dataSource: DataSource,
+    private readonly utilService: UtilService,
   ) {}
 
   async create(
@@ -34,6 +38,8 @@ export class ImageService {
     uploadImageDto: UploadImageDto,
     user: User,
   ) {
+    ImageService.logger.log('ImageService.create() 시작');
+
     const product = await this.productRepository.findById(
       createImageDto.productId,
     );
@@ -50,20 +56,26 @@ export class ImageService {
 
     await this.dataSource.transaction<Image>(
       async (manager: EntityManager): Promise<Image> => {
-        const productImageRepository = manager.withRepository(this.productImageRepository);
+        const productImageRepository = manager.withRepository(
+          this.productImageRepository,
+        );
 
         const newImage = await manager.save(image);
         await productImageRepository.save(productImage);
 
         return newImage;
-      }
-    )
+      },
+    );
 
     const resData: ResponseData = {
       message: SUCCESS_MESSAGE.S003,
-      data: null
-    }
+      data: null,
+    };
 
+    ImageService.logger.log(
+      'ImageService.create() 시작',
+      `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
+    );
     return resData;
   }
 }

@@ -13,12 +13,13 @@ import {
   SUCCESS_MESSAGE,
 } from 'src/common/constants/common-constants';
 import { DeliveryAddressRepository } from './entities/delivery-address.repository';
-import { IDeliveryAddressRepository } from './entities/delivery-address.interface';
+import { IDeliveryAddressRepository } from './entities/delivery-address.repository.interface';
 import { User } from 'src/user/entities/user.entity';
 import { DeliveryAddress } from './entities/delivery-address.entity';
+import { IDeliveryAddressService } from './delivery-address.service.interface';
 
 @Injectable()
-export class DeliveryAddressService {
+export class DeliveryAddressService implements IDeliveryAddressService {
   public static readonly logger = new Logger(DeliveryAddressService.name);
 
   constructor(
@@ -27,7 +28,7 @@ export class DeliveryAddressService {
     private readonly utilService: UtilService,
   ) {}
 
-  async create(createDeliveryAddressDto: CreateDeliveryAddressDto, user: User) {
+  async create(createDeliveryAddressDto: CreateDeliveryAddressDto, user: User): Promise<ResponseData> {
     DeliveryAddressService.logger.log('DeliveryAddressService.create() 시작');
     const newDeliveryAddress = new DeliveryAddress();
     newDeliveryAddress.address = createDeliveryAddressDto.address;
@@ -46,10 +47,10 @@ export class DeliveryAddressService {
       'DeliveryAddressService.create() 종료',
       `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
     );
-    return 'This action adds a new deliveryAddress';
+    return resData;
   }
 
-  async getByUserId(userId: string, user: User) {
+  async getByUserId(userId: string, user: User): Promise<ResponseData> {
     DeliveryAddressService.logger.log(
       'DeliveryAddressService.getByUserId() 시작',
     );

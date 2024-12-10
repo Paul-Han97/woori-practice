@@ -22,10 +22,11 @@ import { ResponseData } from './common/type/response.type';
 import { LoginDto } from './dto/login.dto';
 import { UserRepository } from './user/entities/user.repository';
 import { JwtService } from '@nestjs/jwt';
-import { IUserRepository } from './user/entities/user.interface';
+import { IUserRepository } from './user/entities/user.repository.interface';
+import { IAppService } from './app.service.interface';
 
 @Injectable()
-export class AppService {
+export class AppService implements IAppService {
   public static logger = new Logger(AppService.name);
 
   constructor(
@@ -39,11 +40,7 @@ export class AppService {
     private readonly utilService: UtilService,
   ) {}
 
-  getHello(): string {
-    return 'Hello World!';
-  }
-
-  async sendEmail(sendEmailDto: SendEmailDto) {
+  async sendEmail(sendEmailDto: SendEmailDto): Promise<ResponseData> {
     AppService.logger.log('AppService.sendEmail() 시작');
 
     const transporter = nodemailer.createTransport({
@@ -96,10 +93,10 @@ export class AppService {
       `반환 값:\n${this.utilService.objectFormatter.format(resData)}`,
     );
 
-    return result;
+    return resData;
   }
 
-  async verification(verificationDto: VerificationDto) {
+  async verification(verificationDto: VerificationDto): Promise<ResponseData> {
     AppService.logger.log('AppService.verification() 시작');
     const memoryCode = await this.cacheManager.get<string>(
       verificationDto.email,
@@ -127,7 +124,7 @@ export class AppService {
     return resData;
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto): Promise<ResponseData> {
     AppService.logger.log('AppService.login() 시작');
 
     const user = await this.userRepository.findOneBy({ email: loginDto.email });

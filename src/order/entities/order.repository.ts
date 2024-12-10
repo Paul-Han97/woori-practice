@@ -1,7 +1,7 @@
 import { CustomRepository } from 'src/common/typeorm/custom.decorator';
 import { DataSource, Repository } from 'typeorm';
 import { Order } from './order.entity';
-import { IOrderRepository } from './order.interface';
+import { IOrderRepository } from './order.repository.interface';
 
 @CustomRepository(Order)
 export class OrderRepository

@@ -3,10 +3,10 @@ import {
   Controller,
   Get,
   HttpCode,
+  Inject,
   Logger,
-  Param,
   Post,
-  Query
+  Query,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -14,17 +14,20 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
-  ApiTags,
 } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetUserDto } from './dto/get-user.dto';
 import { UserService } from './user.service';
+import { IUserService } from './user.service.interface';
 
 @Controller('users')
 export class UserController {
   public static readonly logger = new Logger(UserController.name);
 
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    @Inject(UserService)
+    private readonly userService: IUserService,
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -50,7 +53,7 @@ export class UserController {
     UserController.logger.log('UserController.create() 종료');
     return await this.userService.create(createUserDto);
   }
-  
+
   @ApiOperation({
     summary: '유저 조회',
     description: `

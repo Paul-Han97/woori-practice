@@ -1,13 +1,16 @@
-import { Controller, Get, Logger, Param, Query } from '@nestjs/common';
+import { Controller, Get, Inject, Logger, Param, Query } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { GetProductFilterDto } from './dto/get-product-filter.dto';
 import { ProductService } from './product.service';
+import { IProductService } from './product.service.interface';
 
 @Controller('products')
 export class ProductController {
   public static readonly logger = new Logger(ProductController.name);
 
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    @Inject(ProductService)
+    private readonly productService: IProductService) {}
 
   @ApiOperation({
     summary: `조회수를 기준으로 상위 3개의 제품을 조회한다.`,
