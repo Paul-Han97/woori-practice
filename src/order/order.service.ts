@@ -3,7 +3,7 @@ import {
   Inject,
   Injectable,
   Logger,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import {
   ERROR_MESSAGE,
@@ -14,20 +14,21 @@ import { ResponseData } from 'src/common/type/response.type';
 import { UtilService } from 'src/common/utils/util.service';
 import { DeliveryAddress } from 'src/delivery-address/entities/delivery-address.entity';
 import { OrderProduct } from 'src/order-product/entities/order-product.entity';
-import { IOrderProductRepository } from 'src/order-product/entities/order-product.interface';
+import { IOrderProductRepository } from 'src/order-product/entities/order-product.repository.interface';
 import { OrderProductRepository } from 'src/order-product/entities/order-product.repository';
 import { OrderState } from 'src/order-state/entities/order-state.entity';
-import { IProductRepository } from 'src/product/entities/product.interface';
+import { IProductRepository } from 'src/product/entities/product.repository.interface';
 import { ProductRepository } from 'src/product/entities/product.repository';
 import { User } from 'src/user/entities/user.entity';
 import { DataSource, EntityManager } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { Order } from './entities/order.entity';
-import { IOrderRepository } from './entities/order.interface';
+import { IOrderRepository } from './entities/order.repository.interface';
 import { OrderRepository } from './entities/order.repository';
+import { IOrderService } from './order.service.interface';
 
 @Injectable()
-export class OrderService {
+export class OrderService implements IOrderService {
   public static readonly logger = new Logger(OrderService.name);
 
   constructor(
@@ -38,10 +39,10 @@ export class OrderService {
     @Inject(ProductRepository)
     private readonly productRepository: IProductRepository,
     private readonly dataSource: DataSource,
-    private readonly utilService: UtilService
+    private readonly utilService: UtilService,
   ) {}
 
-  async findByUserId(userId: string, loginUser: User) {
+  async findByUserId(userId: string, loginUser: User): Promise<ResponseData> {
     OrderService.logger.log('OrderService.findByUserId() 시작');
     if (userId !== loginUser.id) {
       throw new BadRequestException(ERROR_MESSAGE.E002);
@@ -61,14 +62,19 @@ export class OrderService {
     return resData;
   }
 
-  async create(createOrderDto: CreateOrderDto, user: User) {
+  async create(
+    createOrderDto: CreateOrderDto,
+    user: User,
+  ): Promise<ResponseData> {
     OrderService.logger.log('OrderService.create() 시작');
 
     const deliveryAddress = new DeliveryAddress();
     deliveryAddress.id = createOrderDto.deliveryAddressId;
 
     const orderState = new OrderState();
-    orderState.id = this.utilService.uuidGenerator.generate(ORDER_STATE_TYPE.PROCESSING);
+    orderState.id = this.utilService.uuidGenerator.generate(
+      ORDER_STATE_TYPE.PROCESSING,
+    );
 
     const order = new Order();
     order.recipient = createOrderDto.recipient;

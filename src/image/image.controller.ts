@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Inject,
   Logger,
   Post,
   Request,
@@ -13,14 +14,18 @@ import { AwsService } from 'src/aws/aws.service';
 import { CreateImageDto } from './dto/create-image.dto';
 import { ImageService } from './image.service';
 import { Auth } from 'src/common/guards/auth.decotrator';
+import { IAwsService } from 'src/aws/aws.service.interface';
+import { IImageService } from './image.service.interface';
 
 @Controller('images')
 export class ImageController {
   public static readonly logger = new Logger(ImageController.name);
 
   constructor(
-    private readonly imageService: ImageService,
-    private readonly awsService: AwsService,
+    @Inject(ImageService)
+    private readonly imageService: IImageService,
+    @Inject(AwsService)
+    private readonly awsService: IAwsService,
   ) {}
 
   @ApiConsumes('multipart/form-data')

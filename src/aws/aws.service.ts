@@ -9,15 +9,16 @@ import { ConfigService } from '@nestjs/config';
 import * as sharp from 'sharp';
 import { UtilService } from 'src/common/utils/util.service';
 import { CreateImageDto, UploadImageDto } from 'src/image/dto/create-image.dto';
-import { User } from 'src/user/entities/user.entity';
+import { IAwsService } from './aws.service.interface';
 
 @Injectable()
-export class AwsService {
+export class AwsService implements IAwsService {
   public static readonly logger = new Logger(AwsService.name);
 
   private s3Client: S3Client;
   private readonly bucketName: string;
   private readonly region: string;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly utilService: UtilService,

@@ -1,15 +1,17 @@
-import { Body, Controller, Get, Logger, Param, Post, Request } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Logger, Param, Post, Request } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Auth } from 'src/common/guards/auth.decotrator';
 import { DeliveryAddressService } from './delivery-address.service';
 import { CreateDeliveryAddressDto } from './dto/create-delivery-address.dto';
+import { IDeliveryAddressService } from './delivery-address.service.interface';
 
 @Controller('delivery-addresses')
 export class DeliveryAddressController {
   public static readonly logger = new Logger(DeliveryAddressController.name);
 
   constructor(
-    private readonly deliveryAddressService: DeliveryAddressService,
+    @Inject(DeliveryAddressService)
+    private readonly deliveryAddressService: IDeliveryAddressService,
   ) {}
 
   @ApiOperation({

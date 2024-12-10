@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import { RoomUserService } from './room-user.service';
-import { CreateRoomUserDto } from './dto/create-room-user.dto';
-import { UpdateRoomUserDto } from './dto/update-room-user.dto';
+import { IRoomUserService } from './room-user.service.interface';
 
 @Controller('room-user')
 export class RoomUserController {
-  constructor(private readonly roomUserService: RoomUserService) {}
+  constructor(
+    @Inject(RoomUserService)
+    private readonly roomUserService: IRoomUserService,
+  ) {}
 }

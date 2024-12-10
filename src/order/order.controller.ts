@@ -2,21 +2,31 @@ import {
   Body,
   Controller,
   Get,
+  Inject,
   Logger,
   Param,
   Post,
   Request,
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiNotFoundResponse, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiNotFoundResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { Auth } from 'src/common/guards/auth.decotrator';
-import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { OrderService } from './order.service';
+import { IOrderService } from './order.service.interface';
 
 @Controller('orders')
 export class OrderController {
   public static readonly logger = new Logger(OrderController.name);
 
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    @Inject(OrderService)
+    private readonly orderService: IOrderService,
+  ) {}
 
   @ApiOperation({
     summary: '고객 배송 현황(주문 조회)을 조회한다.',
@@ -49,7 +59,7 @@ export class OrderController {
     - productList: productId와 count의 배열이다.
       - productId: 사용자가 구매하려는 제품의 id를 의미한다.
       - count: 구매하려는 제품의 수량을 의미한다.
-    - count 만큼 product 테이블의 quantity 컬럼을 감한다.`
+    - count 만큼 product 테이블의 quantity 컬럼을 감한다.`,
   })
   @ApiNotFoundResponse()
   @ApiBadRequestResponse()
@@ -58,7 +68,10 @@ export class OrderController {
   @Post()
   async create(@Body() createOrderDto: CreateOrderDto, @Request() req: any) {
     OrderController.logger.log('OrderController.create() 시작');
-    createOrderDto.recipientPhone = createOrderDto.recipientPhone.replaceAll('-', '');
+    createOrderDto.recipientPhone = createOrderDto.recipientPhone.replaceAll(
+      '-',
+      '',
+    );
     const result = await this.orderService.create(createOrderDto, req.user);
     OrderController.logger.log('OrderController.create() 종료');
     return result;

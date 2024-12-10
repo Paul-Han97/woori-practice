@@ -2,11 +2,12 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { SUCCESS_MESSAGE } from 'src/common/constants/common-constants';
 import { ResponseData } from 'src/common/type/response.type';
 import { UtilService } from 'src/common/utils/util.service';
-import { ICategoryRepository } from './entities/category.interface';
+import { ICategoryRepository } from './entities/category.repository.interface';
 import { CategoryRepository } from './entities/category.repository';
+import { ICategoryService } from './category.service.interface';
 
 @Injectable()
-export class CategoryService {
+export class CategoryService implements ICategoryService {
   public static readonly logger = new Logger(CategoryService.name);
 
   constructor(

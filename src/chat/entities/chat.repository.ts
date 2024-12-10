@@ -1,7 +1,7 @@
-import { Repository } from 'typeorm';
-import { IRoomRepository } from './chat.interface';
 import { CustomRepository } from 'src/common/typeorm/custom.decorator';
+import { Repository } from 'typeorm';
 import { Chat } from './chat.entity';
+import { IRoomRepository } from './chat.repository.interface';
 
 @CustomRepository(Chat)
 export class RoomRepository

@@ -1,12 +1,15 @@
-import { WebSocketGateway, SubscribeMessage, MessageBody } from '@nestjs/websockets';
+import { Inject } from '@nestjs/common';
+import { WebSocketGateway } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
-import { CreateChatDto } from './dto/create-chat.dto';
-import { UpdateChatDto } from './dto/update-chat.dto';
+import { IChatService } from './chat.service.interface';
 
 @WebSocketGateway()
 export class ChatGateway {
-  constructor(private readonly chatService: ChatService) {}
-
+  constructor(
+    @Inject(ChatService)
+    private readonly chatService: IChatService,
+  ) {}
+  /* 
   @SubscribeMessage('createChat')
   create(@MessageBody() createChatDto: CreateChatDto) {
     return this.chatService.create(createChatDto);
@@ -31,4 +34,5 @@ export class ChatGateway {
   remove(@MessageBody() id: number) {
     return this.chatService.remove(id);
   }
+    */
 }

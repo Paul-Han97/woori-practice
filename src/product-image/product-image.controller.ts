@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import { ProductImageService } from './product-image.service';
-import { CreateProductImageDto } from './dto/create-product-image.dto';
-import { UpdateProductImageDto } from './dto/update-product-image.dto';
+import { IProductImageService } from './product-image.service.interface';
 
 @Controller('product-image')
 export class ProductImageController {
-  constructor(private readonly productImageService: ProductImageService) {}
+  constructor(
+    @Inject(ProductImageService)
+    private readonly productImageService: IProductImageService,
+  ) {}
 }

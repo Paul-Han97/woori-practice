@@ -1,12 +1,15 @@
-import { Controller, Get, Logger } from '@nestjs/common';
+import { Controller, Get, Inject, Logger } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ICategoryService } from './category.service.interface';
 
 @Controller('categories')
 export class CategoryController {
   public static readonly logger = new Logger(CategoryController.name);
 
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(
+    @Inject(CategoryService)
+    private readonly categoryService: ICategoryService) {}
 
   @ApiOperation({
     summary: '카테고리 전체 조회',
